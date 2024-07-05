@@ -1,0 +1,65 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "g++ build project",
+            "command": "/usr/bin/make",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "dependsOn":["g++ clean project"]
+            
+        },
+        {
+            "type": "shell",
+            "label": "g++ clean project",
+            "command": "/usr/bin/make",
+            "args": ["clean"],
+            "options": {
+                "cwd": "${workspaceFolder}/"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "g++ build generator",
+            "command": "/usr/bin/make",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/src/tgen"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "dependsOn":["g++ clean generator"]
+            
+        },
+        {
+            "type": "shell",
+            "label": "g++ clean generator",
+            "command": "/usr/bin/make",
+            "args": ["clean"],
+            "options": {
+                "cwd": "${workspaceFolder}/src/tgen"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+    ],
+    "version": "2.0.0"
+}
