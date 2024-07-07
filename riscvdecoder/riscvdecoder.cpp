@@ -154,14 +154,19 @@ SC_MODULE(RV_DECODER)
     sc_out<sc_uint<5>> rs1;
     sc_out<sc_uint<5>> rs2;
     sc_out<sc_uint<5>> rd;
-    sc_out<sc_uint<32>> imm;
+    sc_out<sc_uint<32>> imm_12_itype;
+    sc_out<sc_uint<32>> imm_12_sbtype;
+    sc_out<sc_uint<32>> imm_20_ujtype;
+    sc_out<sc_uint<32>> selected_imm;
 
     void perform_decoding()
     {
-        rs1 = 4;
-        rs2 = 5;
-        rd = 6;
-        imm = 7;
+        rs1 = instr.read().range(20, 15); // bits 15-20
+        rs2 = instr.read().range(25, 21); // bits 21-25
+        rd = instr.read().range(12, 7);   // bits 7-12
+        imm_12_itype = instr.read().range(31,20);  // bits 31,20
+        imm_12_sbtype = (instr.read().range(31,24) << 5) | instr.read().range(11,7);
+        imm_20_ujtype = instr.read().range(31,12);
     }
 
     SC_CTOR(RV_DECODER)
@@ -184,7 +189,10 @@ SC_MODULE(Testbench)
     sc_signal<sc_uint<5>> rs1;
     sc_signal<sc_uint<5>> rs2;
     sc_signal<sc_uint<5>> rd;
-    sc_signal<sc_uint<32>> imm;
+    sc_signal<sc_uint<32>> imm_12_itype;
+    sc_signal<sc_uint<32>> imm_12_sbtype;
+    sc_signal<sc_uint<32>> imm_20_ujtype;
+    sc_signal<sc_uint<32>> selected_imm;
     uint32_t mem_size = 0;
 
     void generate_clock_pulse()
@@ -207,7 +215,8 @@ SC_MODULE(Testbench)
                 pc.write(pc_val);
                 uint32_t *mem_addr = ((uint32_t *)mem);
                 instruction.write(mem_addr[pc_val]);
-                cout << "Timestamp: " << sc_time_stamp() << " pc_val " << pc_val << "| instr: " << instruction << " rs1: " << rs1 << " rs2: " << rs2 << " rd: " << rd << ", imm: " << imm << endl;
+                cout << "Timestamp: " << sc_time_stamp() << " pc_val " << pc_val << "| instr: " << instruction << " rs1: " << rs1 << " rs2: " << rs2 << " rd: " << rd
+                     << ", imm_12_itype: " << imm_12_itype << ", imm_12_sbtype: " << imm_12_sbtype << ", imm_20_ujtype: " << imm_20_ujtype << ", selected_imm: " << selected_imm << endl;
                 pc_val = pc_val + 4;
             }
         }
@@ -222,7 +231,10 @@ SC_MODULE(Testbench)
         rv_dec->rs1(rs1);
         rv_dec->rs2(rs2);
         rv_dec->rd(rd);
-        rv_dec->imm(imm);
+        rv_dec->imm_12_itype(imm_12_itype);
+        rv_dec->imm_12_sbtype(imm_12_sbtype);
+        rv_dec->imm_20_ujtype(imm_20_ujtype);
+        rv_dec->selected_imm(selected_imm);
         SC_THREAD(generate_clock_pulse);
         SC_METHOD(decode_instruction);
         sensitive << clk.posedge_event();
