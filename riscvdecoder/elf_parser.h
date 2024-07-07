@@ -8,6 +8,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <systemc.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <algorithm>
+#include <vector>
 using namespace std;
 typedef struct {
     uint32_t start_addr;
